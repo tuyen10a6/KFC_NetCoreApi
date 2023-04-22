@@ -1,0 +1,622 @@
+CREATE DATABASE KFC_DB
+
+CREATE TABLE ChiNhanh (
+  MaChiNhanh INT PRIMARY KEY IDENTITY(1,1),
+  TenChiNhanh VARCHAR(255),
+  DiaChiChiNhanh VARCHAR(255),
+  SoDienThoai VARCHAR(20),
+  GioMoCua VARCHAR(255)
+)
+CREATE TABLE DanhMuc
+(
+   MaDanhMuc  INT PRIMARY KEY IDENTITY(1,1),
+   TenDanhMuc NVARCHAR(256) NOT NULL,
+   ImageDanhMuc NVARCHAR(MAX)
+)
+ 
+	CREATE TABLE SanPham
+	(
+   				MaSanPham INT PRIMARY KEY IDENTITY(1,1),
+				TenSanPham NVARCHAR(256) NOT NULL,
+				GiaTien INT,
+				 Image NVARCHAR(MAX),
+				MaDanhMuc INT FOREIGN KEY(MaDanhMuc) REFERENCES DanhMuc(MaDanhMuc),
+				LuotXem int,
+				MoTa NVARCHAR(500),
+				MaNhaCungCap INT FOREIGN KEY(MaNhaCungCap) REFERENCES NhaCungCap(MaNhaCungCap),
+				NgayTao DATETIME
+	)
+
+
+CREATE TABLE Slide
+(
+   MaSlide INT PRIMARY KEY IDENTITY(1,1),
+   SlideUrl NVARCHAR(MAX)
+)
+
+--- Bảng khách hàng
+CREATE TABLE CUSTOMER
+(
+   CUSTOMERID INT IDENTITY(1,1) PRIMARY KEY,
+   CUSTOMERNAME NVARCHAR(100) NOT NULL,
+   CUSTOMERPHONE NVARCHAR(12) NOT NULL,
+   CUSTOMEREMAIL NVARCHAR(100) NOT NULL,
+   CUSTOMERADDRESS NVARCHAR(200) NOT NULL
+)
+
+-- Bảng trạng thái đơn hàng
+
+CREATE TABLE ORDERSTATUS
+(
+  ORDERSTATUSID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  ORDERSTATUSNAME NVARCHAR(100) NOT NULL
+)
+
+--
+CREATE TABLE ORDERS
+(
+   ORDERID INT IDENTITY(1,1) PRIMARY KEY,
+   CUSTOMERID INT FOREIGN KEY(CUSTOMERID) REFERENCES CUSTOMER(CUSTOMERID) NOT NULL,
+   ORDERDATE DATETIME NOT NULL,
+   ORDERSTATUSID INT FOREIGN KEY(ORDERSTATUSID) REFERENCES ORDERSTATUS(ORDERSTATUSID),
+   MaChiNhanh INT FOREIGN KEY(MaChiNhanh) REFERENCES  ChiNhanh(MaChiNhanh)
+
+)
+-- TẠO BẢNG CHI TIẾT ĐƠN HÀNG
+CREATE TABLE ORDERDETAILS
+(
+  ORDERDETAILSID INT IDENTITY(1,1) PRIMARY KEY,
+  ORDERID INT FOREIGN KEY(ORDERID) REFERENCES ORDERS(ORDERID) NOT NULL,
+  MaSanPham INT FOREIGN KEY(MaSanPham) REFERENCES SanPham(MaSanPham) NOT NULL,
+  QUANTITY INT NOT NULL,
+  PRICE INT NOT NULL
+)
+
+CREATE TABLE USERS
+(
+   USERSID INT IDENTITY(1,1) PRIMARY KEY,
+   USERNAME NVARCHAR(50) NOT NULL,
+   PASSWORD NVARCHAR(30) NOT NULL,
+   ROLE NVARCHAR(50)
+)
+CREATE TABLE NhaCungCap
+(
+  MaNhaCungCap INT IDENTITY(1,1) PRIMARY KEY,
+  TenNhaCungCap NVARCHAR(200) NOT NULL,
+  DiaChi NVARCHAR(500) NOT NULL,
+  SoDienThoai NVARCHAR(15)
+)
+CREATE TABLE GiamGia
+
+(
+  IDGiamGia INT IDENTITY(1,1) PRIMARY KEY,
+  MaGiamGia NVARCHAR(10),
+   SoTien INT
+
+)
+
+CREATE TABLE HoaDonNhap
+(
+  MaHoaDonNhap INT IDENTITY(1,1) PRIMARY KEY,
+  NgayNhap DATETIME
+
+)
+CREATE TABLE CHITIETHOADONNHAP
+(
+  
+  CHITIETNHAPID INT IDENTITY(1,1) PRIMARY KEY,
+  MaHoaDonNhap INT FOREIGN KEY(MaHoaDonNhap) REFERENCES HoaDonNhap(MaHoaDonNhap),
+  MaSanPham INT FOREIGN KEY(MaSanPham) REFERENCES SanPham(MaSanPham),
+  SL INT,
+  DonGia INT,
+  TongTien INT
+
+)
+
+--- Bảng phiếu  thu(Ví dụ:Tính tổng tiền trong 1 ngày)
+
+CREATE TABLE PhieuThu (
+  MaPhieuThu INT PRIMARY KEY IDENTITY(1,1),
+  CUSTOMERID INT NOT NULL FOREIGN KEY(CUSTOMERID) REFERENCES CUSTOMER(CUSTOMERID),
+  NgayThu DATE NOT NULL,
+  SoTien DECIMAL(18,2) NOT NULL,
+  GhiChu VARCHAR(255),
+  
+);
+
+
+------- Tạo hàm thủ tục lấy toàn bộ sản phẩm
+
+CREATE PROCEDURE GetAllSanPham
+AS
+BEGIN
+  SELECT s.* , d.TenDanhMuc FROM SanPham as s
+  INNER JOIN DanhMuc as d 
+   on s.MaDanhMuc = d.MaDanhMuc
+END
+
+EXEC GetAllSanPham
+
+--- Lấy sản phẩm theo ID
+
+CREATE PROCEDURE GetSanPhamById
+@ProductID int
+AS 
+BEGIN
+  SELECT s.* , d.TenDanhMuc FROM SanPham as s
+  INNER JOIN DanhMuc as d 
+   on s.MaDanhMuc = d.MaDanhMuc WHERE S.MaSanPham = @ProductID
+
+END
+
+EXEC GetSanPhamById 1
+
+--- Hàm tìm kiếm sản phẩm
+
+CREATE PROCEDURE SearchSanPham
+  @TenSanPham NVARCHAR(256)
+AS
+BEGIN
+  SELECT s.*, d.TenDanhMuc FROM SanPham as s
+  INNER JOIN DanhMuc as d 
+   on s.MaDanhMuc = d.MaDanhMuc
+  WHERE s.TenSanPham LIKE '%' + @TenSanPham + '%'
+END
+
+EXEC SearchSanPham viên
+
+
+CREATE PROCEDURE AddSanPham
+  @RequestBody NVARCHAR(MAX)
+AS
+BEGIN
+  DECLARE @TenSanPham NVARCHAR(256),
+          @GiaTien INT,
+          @Image NVARCHAR(MAX),
+          @MaDanhMuc INT,
+          @LuotXem INT,
+          @MoTa NVARCHAR(500),
+          @MaNhaCungCap INT,
+          @NgayTao DATETIME
+  
+  -- Parse request body to get values of parameters
+  SELECT @TenSanPham = JSON_VALUE(@RequestBody, '$.TenSanPham'),
+         @GiaTien = JSON_VALUE(@RequestBody, '$.GiaTien'),
+         @Image = JSON_VALUE(@RequestBody, '$.Image'),
+         @MaDanhMuc = JSON_VALUE(@RequestBody, '$.MaDanhMuc'),
+         @LuotXem = JSON_VALUE(@RequestBody, '$.LuotXem'),
+         @MoTa = JSON_VALUE(@RequestBody, '$.MoTa'),
+         @MaNhaCungCap = JSON_VALUE(@RequestBody, '$.MaNhaCungCap'),
+         @NgayTao = GETDATE()
+         
+  -- Insert new record into SanPham table
+  INSERT INTO SanPham(TenSanPham, GiaTien, Image, MaDanhMuc, LuotXem, MoTa, MaNhaCungCap, NgayTao)
+  VALUES(@TenSanPham, @GiaTien, @Image, @MaDanhMuc, @LuotXem, @MoTa, @MaNhaCungCap, @NgayTao)
+END
+
+
+--- Hàm thủ tục sắp xếp giá tiền từ cao xuống thấp
+CREATE PROCEDURE SortSanPhamByGiaTienDESC
+AS
+BEGIN
+  SELECT *
+  FROM SanPham
+  ORDER BY GiaTien DESC
+END
+
+EXEC SortSanPhamByGiaTienDESC
+
+-- Ham thu tuc sap xep gia tien cao xuong thap theo loai danh muc
+
+CREATE PROCEDURE SortSanPhamByGiaTienDESCByCate
+
+@categoryId int
+AS
+BEGIN
+  SELECT *
+  FROM SanPham
+  WHERE SanPham.MaDanhMuc = @categoryId
+  ORDER BY GiaTien DESC
+END
+
+EXEC SortSanPhamByGiaTienDESCByCate  1
+
+--- Hàm thủ tục sắp xếp giá tiền từ thấp lên cao
+
+CREATE PROCEDURE SortSanPhamByGiaTienAsc
+AS
+BEGIN
+  SELECT * FROM SanPham ORDER BY GiaTien ASC
+END
+
+EXEC SortSanPhamByGiaTienAsc
+
+
+--- --- Hàm thủ tục sắp xếp giá tiền từ thấp lên cao Theo danh muc
+
+CREATE PROCEDURE SortSanPhamByGiaTienAscByCate
+@CategoryID int
+AS
+BEGIN
+  SELECT * FROM SanPham
+   where SanPham.MaDanhMuc = @CategoryID
+  ORDER BY GiaTien ASC
+END
+ 
+EXEC SortSanPhamByGiaTienAscByCate 1
+
+
+--- Hàm thủ tục phân trang sản phẩm
+CREATE PROCEDURE dbo.GetSanPhamPaging
+    @PageSize INT = 10,
+    @PageNumber INT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @StartRow INT = (@PageNumber - 1) * @PageSize + 1;
+    DECLARE @EndRow INT = @PageNumber * @PageSize;
+    
+    WITH cte AS (
+        SELECT ROW_NUMBER() OVER (ORDER BY GiaTien DESC) AS RowNum, *
+        FROM SanPham
+    )
+    SELECT *
+    FROM cte
+    WHERE RowNum BETWEEN @StartRow AND @EndRow;
+END
+
+EXEC dbo.GetSanPhamPaging @PageSize = 3, @PageNumber = 2;
+
+--- Hàm thủ tục thêm sản phẩm
+--CREATE PROCEDURE AddSanPham
+--  @RequestBody NVARCHAR(MAX)
+--AS
+--BEGIN
+--  DECLARE @TenSanPham NVARCHAR(256),
+--          @GiaTien INT,
+--          @Image NVARCHAR(MAX),
+--          @MaDanhMuc INT,
+--          @LuotXem INT,
+--          @MoTa NVARCHAR(500),
+--          @MaNhaCungCap INT
+  
+--  -- Parse request body to get values of parameters
+--  SELECT @TenSanPham = JSON_VALUE(@RequestBody, '$.TenSanPham'),
+--         @GiaTien = JSON_VALUE(@RequestBody, '$.GiaTien'),
+--         @Image = JSON_VALUE(@RequestBody, '$.Image'),
+--         @MaDanhMuc = JSON_VALUE(@RequestBody, '$.MaDanhMuc'),
+--         @LuotXem = JSON_VALUE(@RequestBody, '$.LuotXem'),
+--         @MoTa = JSON_VALUE(@RequestBody, '$.MoTa'),
+--         @MaNhaCungCap = JSON_VALUE(@RequestBody, '$.MaNhaCungCap')
+         
+--  -- Insert new record into SanPham table
+--  INSERT INTO SanPham(TenSanPham, GiaTien, Image, MaDanhMuc, LuotXem, MoTa, MaNhaCungCap)
+--  VALUES(@TenSanPham, @GiaTien, @Image, @MaDanhMuc, @LuotXem, @MoTa, @MaNhaCungCap)
+--END
+
+
+ -----ADDProduct
+EXEC AddSanPham @RequestBody = N'{
+    "TenSanPham": "Burger Gà Cay",
+    "GiaTien": 50000,
+    "Image": "https://orderserv-kfc-assets.yum.com/15895bb59f7b4bb588ee933f8cd5344a/images/categories/CAT3132.jpg?ver=13.9",
+    "MaDanhMuc": 1,
+    "LuotXem": 0,
+    "MoTa": "Burger Gà KFC",
+    "MaNhaCungCap": 1
+}'
+
+
+--- Update Product
+CREATE PROCEDURE UpdateSanPham
+  @RequestBody NVARCHAR(MAX)
+AS
+BEGIN
+  DECLARE @MaSanPham INT,
+          @TenSanPham NVARCHAR(256),
+          @GiaTien INT,
+          @Image NVARCHAR(MAX),
+          @MaDanhMuc INT,
+          @LuotXem INT,
+          @MoTa NVARCHAR(500),
+          @MaNhaCungCap INT
+  
+  -- Parse request body to get values of parameters
+  SELECT @MaSanPham = JSON_VALUE(@RequestBody, '$.MaSanPham'),
+         @TenSanPham = JSON_VALUE(@RequestBody, '$.TenSanPham'),
+         @GiaTien = JSON_VALUE(@RequestBody, '$.GiaTien'),
+         @Image = JSON_VALUE(@RequestBody, '$.Image'),
+         @MaDanhMuc = JSON_VALUE(@RequestBody, '$.MaDanhMuc'),
+         @LuotXem = JSON_VALUE(@RequestBody, '$.LuotXem'),
+         @MoTa = JSON_VALUE(@RequestBody, '$.MoTa'),
+         @MaNhaCungCap = JSON_VALUE(@RequestBody, '$.MaNhaCungCap')
+         
+  -- Update the record in SanPham table
+  UPDATE SanPham
+  SET TenSanPham = @TenSanPham,
+      GiaTien = @GiaTien,
+      Image = @Image,
+      MaDanhMuc = @MaDanhMuc,
+      LuotXem = @LuotXem,
+      MoTa = @MoTa,
+      MaNhaCungCap = @MaNhaCungCap
+  WHERE MaSanPham = @MaSanPham
+END
+
+
+EXEC UpdateSanPham @RequestBody = N'{
+"MaSanPham":"1",
+    "TenSanPham": "Burger Gà",
+    "GiaTien": 50000,
+    "Image": "https://orderserv-kfc-assets.yum.com/15895bb59f7b4bb588ee933f8cd5344a/images/categories/CAT3132.jpg?ver=13.9",
+    "MaDanhMuc": 1,
+    "LuotXem": 0,
+    "MoTa": "Burger Gà KFC",
+    "MaNhaCungCap": 1
+}'
+
+
+--- Delete From
+CREATE PROCEDURE DeleteSanPham
+  @MaSanPham INT
+AS
+BEGIN
+  DELETE FROM SanPham WHERE MaSanPham = @MaSanPham
+END
+
+
+--- Hàm thủ tục lấy tiền theo khoảng giá
+
+CREATE PROCEDURE FindSanPhamByPriceRange
+  @MinPrice INT,
+  @MaxPrice INT
+AS
+BEGIN
+  SELECT * FROM SanPham WHERE GiaTien >= @MinPrice AND GiaTien <= @MaxPrice
+END
+
+EXEC FindSanPhamByPriceRange @MinPrice = 1000, @MaxPrice = 20000
+
+---Hàm thủ tục lấy tiền theo khoảng giá By ID dANH MUc
+ CREATE PROCEDURE FindSanPhamByPriceRangeByCate
+ @CategoryID INT,
+  @MinPrice INT,
+  @MaxPrice INT
+AS
+BEGIN
+  SELECT * FROM SanPham 
+  
+  WHERE GiaTien >= @MinPrice AND GiaTien <= @MaxPrice AND SanPham.MaDanhMuc = @CategoryID
+END
+
+EXEC FindSanPhamByPriceRangeByCate @CategoryID  = 1, @MinPrice = 1000, @MaxPrice = 2000000
+--- Hàm thủ tục lấy view
+CREATE PROCEDURE GetMostViewedSanPham
+AS
+BEGIN
+  SELECT TOP 5 * FROM SanPham ORDER BY LuotXem DESC
+END
+
+EXEC GetMostViewedSanPham
+-- Hàm thủ tục thêm đơn hàng
+CREATE PROCEDURE AddOrder
+    @CustomerName NVARCHAR(50),
+    @PhoneNumber NVARCHAR(20),
+    @CustomerAddress NVARCHAR(200),
+    @CustomerEmail NVARCHAR(200),
+    @OrderStatusID INT,
+	
+    @OrderDetailsList NVARCHAR(MAX),
+	 @MaChiNhanh INT -- Tham số mới cho mã chi nhánh
+AS
+BEGIN
+    DECLARE @CustomerID INT;
+    DECLARE @OrderID INT;
+	
+    DECLARE @OrderDate DATETIME = GETDATE(); -- Lấy ngày giờ hiện tại
+	
+
+    -- Kiểm tra xem khách hàng đã tồn tại trong cơ sở dữ liệu chưa
+    SELECT @CustomerID = c.CustomerID
+    FROM Customer as c
+    WHERE CustomerName = @CustomerName AND CustomerPhone = @PhoneNumber;
+
+    -- Nếu khách hàng chưa tồn tại, thêm mới khách hàng vào bảng Customers
+    IF @CustomerID IS NULL
+    BEGIN
+        INSERT INTO Customer(CustomerName, CustomerPhone , CustomerAddress , CustomerEmail)
+        VALUES (@CustomerName, @PhoneNumber, @CustomerAddress, @CustomerEmail);
+        SET @CustomerID = SCOPE_IDENTITY();
+    END
+
+    -- Thêm đơn hàng vào bảng Orders
+    INSERT INTO ORDERS(CUSTOMERID, ORDERDATE, ORDERSTATUSID, MaChiNhanh)
+    VALUES (@CustomerID, @OrderDate, @OrderStatusID , @MaChiNhanh);
+
+    -- Lấy OrderID mới nhất vừa được thêm vào
+    SET @OrderID = SCOPE_IDENTITY();
+
+    -- Thêm danh sách chi tiết đơn hàng vào bảng tạm thời
+    DECLARE @OrderDetailsTable TABLE
+    (
+     
+        ProductID INT,
+        Quantity INT,
+        Price INT
+    )
+
+    INSERT INTO @OrderDetailsTable
+    SELECT  ProductID, Quantity, Price
+    FROM OPENJSON(@OrderDetailsList)
+    WITH (
+       
+        ProductID INT,
+        Quantity INT,
+        Price INT
+    )
+
+    -- Thêm từng chi tiết đơn hàng vào bảng OrderDetails
+   
+    DECLARE @ProductID INT;
+    DECLARE @Quantity INT;
+    DECLARE @Price INT;
+
+    DECLARE OrderDetailsCursor CURSOR FOR
+    SELECT  ProductID, Quantity, Price
+    FROM @OrderDetailsTable;
+
+    OPEN OrderDetailsCursor;
+
+    FETCH NEXT FROM OrderDetailsCursor INTO  @ProductID, @Quantity, @Price;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        IF @ProductID IS NULL
+        BEGIN
+            -- Nếu không có biến thể, thêm ProductID vào bảng OrderDetails
+            INSERT INTO ORDERDETAILS(ORDERID, MaSanPham, QUANTITY, PRICE)
+            VALUES (@OrderID, @ProductID, @Quantity, @Price);
+        END
+        ELSE
+        BEGIN
+            -- Nếu có biến thể, thêm ProductID vào bảng OrderDetails
+            INSERT INTO ORDERDETAILS(ORDERID, MaSanPham, QUANTITY, PRICE)
+            VALUES (@OrderID, @ProductID, @Quantity, @Price);
+        END
+
+        FETCH NEXT FROM OrderDetailsCursor INTO  @ProductID, @Quantity, @Price;
+    END;
+
+    CLOSE OrderDetailsCursor;
+    DEALLOCATE OrderDetailsCursor;
+END;
+
+DECLARE @CustomerName NVARCHAR(50) = N'Phạm Văn Khải'
+DECLARE @PhoneNumber NVARCHAR(20) = '0853675166'
+DECLARE @CustomerAddress NVARCHAR(200) = N'Tân Hưng - TP Hưng Yên'
+DECLARE @CustomerEmail NVARCHAR(200) = 'PhamTuyenOk2002@gmail.com'
+DECLARE @OrderStatusID INT = 1
+DECLARE @MaChiNhanh INT = 1
+DECLARE @OrderDetailsList NVARCHAR(MAX) = '[ { "ProductID": 3, "Quantity": 100, "Price": 240000000},{ "ProductID": 4, "Quantity": 100, "Price": 232000}]'
+EXEC AddOrder @CustomerName, @PhoneNumber,  @CustomerAddress, @CustomerEmail, @OrderStatusID, @OrderDetailsList,@MaChiNhanh
+
+
+--- Tạo hàm thủ tục lấy sản phẩm theo loại
+
+CREATE PROCEDURE GetProductsByCategory
+    @CategoryID INT
+AS
+BEGIN
+    SELECT *
+    FROM SanPham
+    WHERE MaDanhMuc = @CategoryID;
+END
+
+
+EXEC GetProductsByCategory 2
+
+--- Tạo hàm tục  lấy sản phẩm theo giá tiền và theo loại 
+CREATE PROCEDURE GetProductsByPriceRangeAndCategory
+    @CategoryID INT,
+    @MinPrice FLOAT,
+    @MaxPrice FLOAT
+AS
+BEGIN
+    SELECT *
+    FROM SanPham
+    WHERE MaDanhMuc = @CategoryID AND GiaTien  BETWEEN @MinPrice AND @MaxPrice;
+END
+
+EXEC GetProductsByPriceRangeAndCategory @CategoryID = 1, @MinPrice = 10000, @MaxPrice = 43000;
+
+--- Tạo hàm thủ tục  thêm danh mục
+
+
+CREATE PROCEDURE AddDanhMuc
+  @requestbody NVARCHAR(MAX)
+AS
+BEGIN
+  DECLARE @TenDanhMuc NVARCHAR(256),
+          @ImageDanhMuc NVARCHAR(MAX)
+  
+  -- Parse request body to get values of parameters
+  SELECT @TenDanhMuc = JSON_VALUE(@requestbody, '$.TenDanhMuc'),
+         @ImageDanhMuc = JSON_VALUE(@requestbody, '$.ImageDanhMuc')
+  
+  -- Insert new record into DanhMuc table
+  INSERT INTO DanhMuc(TenDanhMuc, ImageDanhMuc)
+  VALUES(@TenDanhMuc, @ImageDanhMuc)
+END
+
+DECLARE @requestbody NVARCHAR(MAX)
+SET @requestbody = '{"TenDanhMuc": "Danh mục sản phẩm mới", "ImageDanhMuc": "https://orderserv-kfc-assets.yum.com/15895bb59f7b4bb588ee933f8cd5344a/images/categories/CAT3355.jpg?ver=13.9"}'
+
+EXEC AddDanhMuc @requestbody
+
+--- Hàm thủ tục sửa danh mục
+CREATE PROCEDURE UpdateDanhMuc
+  @requestbody NVARCHAR(MAX)
+AS
+BEGIN
+  DECLARE @MaDanhMuc INT,
+          @TenDanhMuc NVARCHAR(256),
+          @ImageDanhMuc NVARCHAR(MAX)
+  
+  -- Parse request body to get values of parameters
+  SELECT @MaDanhMuc = JSON_VALUE(@requestbody, '$.MaDanhMuc'),
+         @TenDanhMuc = JSON_VALUE(@requestbody, '$.TenDanhMuc'),
+         @ImageDanhMuc = JSON_VALUE(@requestbody, '$.ImageDanhMuc')
+  
+  -- Update record in DanhMuc table
+  UPDATE DanhMuc
+  SET TenDanhMuc = @TenDanhMuc,
+      ImageDanhMuc = @ImageDanhMuc
+  WHERE MaDanhMuc = @MaDanhMuc
+END
+
+
+
+--- DELETE danh mục
+
+CREATE PROCEDURE XoaDanhMuc
+  @MaDanhMuc INT
+AS
+BEGIN
+  DELETE FROM DanhMuc WHERE MaDanhMuc = @MaDanhMuc
+END
+
+
+CREATE PROCEDURE GetBestSellingProducts
+AS
+BEGIN
+    SELECT TOP 10 SanPham.MaSanPham, TenSanPham, Sanpham.GiaTien , SanPham.LuotXem, SanPham.MoTa, SanPham.Image, SanPham.MaDanhMuc, SUM(QUANTITY) AS TotalQuantitySold
+    FROM ORDERDETAILS
+    INNER JOIN SanPham ON ORDERDETAILS.MaSanPham = SanPham.MaSanPham
+    GROUP BY SanPham.MaSanPham, TenSanPham, Sanpham.GiaTien , SanPham.LuotXem, SanPham.MoTa, SanPham.Image, SanPham.MaDanhMuc
+    ORDER BY TotalQuantitySold DESC
+END
+
+EXEC GetBestSellingProducts
+
+---------
+
+CREATE PROCEDURE GetLatestProduct
+AS
+BEGIN
+    SELECT TOP 5 * FROM SanPham ORDER BY NgayTao DESC
+END
+
+EXEC GetLatestProduct
+
+-----
+ CREATE PROC GetAllDanhMuc
+ AS
+ BEGIN
+ SELECT * FROM DanhMuc
+ END
+
+
+ EXEC GetAllDanhMuc
+
+

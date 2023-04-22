@@ -2,6 +2,7 @@ using BUS.BusUser;
 using BUS.IBus;
 using DAL.DALUSER;
 using DAL.Helper;
+using DAL.Iterface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IDatabaseHelper, DatabaseHelper>();
 builder.Services.AddTransient<ISanPhamRepository, SanPhamUserRepository>();
 builder.Services.AddTransient<ISanPhamUserBus, SanPhamBus>();
+builder.Services.AddTransient<IDanhMucRepository, DanhMucUserRepository>();
+builder.Services.AddTransient<IDanhMucUserBus, DanhMucBus>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -43,7 +43,7 @@ namespace DAL.DALUSER
 
         public List<SanPhamModel> GetSanPhamPaging(int PageSize, int PageNumber)
         {
-            var ProcName = "GetProductsByCategory";
+            var ProcName = "GetSanPhamPaging";
             var OK = _databaseHelper.ExecuteSProcedureReturnDataTable(ProcName, "@PageSize", PageSize, "@PageNumber", PageNumber) ;
             var result = OK.ConvertTo<SanPhamModel>().ToList();
             return result;
