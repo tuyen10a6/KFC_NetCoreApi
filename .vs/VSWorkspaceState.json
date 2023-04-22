@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\KFC_PhamTungDuong_NetCoreApi"
+    "\\BUS",
+    "\\KFC_PhamTungDuong_Admin"
   ],
-  "SelectedNode": "\\KFC_PhamTungDuong_NetCoreApi\\KFC_PhamTungDuong_NetCoreApi.sln",
+  "SelectedNode": "\\BUS\\BUS.csproj",
   "PreviewInSolutionExplorer": false
 }

@@ -1,0 +1,17 @@
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.csproj.AssemblyReference.cache
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.GeneratedMSBuildEditorConfig.editorconfig
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.AssemblyInfoInputs.cache
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.AssemblyInfo.cs
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.csproj.CoreCompileInputs.cache
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\bin\Debug\net6.0\BUS.deps.json
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\bin\Debug\net6.0\BUS.dll
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\bin\Debug\net6.0\BUS.pdb
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\bin\Debug\net6.0\DAL.dll
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\bin\Debug\net6.0\MODEL.dll
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\bin\Debug\net6.0\DAL.pdb
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\bin\Debug\net6.0\MODEL.pdb
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.csproj.CopyComplete
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.dll
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\refint\BUS.dll
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\BUS.pdb
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\BUS\obj\Debug\net6.0\ref\BUS.dll
