@@ -17,6 +17,8 @@ builder.Services.AddTransient<ISanPhamRepository, SanPhamUserRepository>();
 builder.Services.AddTransient<ISanPhamUserBus, SanPhamBus>();
 builder.Services.AddTransient<IDanhMucRepository, DanhMucUserRepository>();
 builder.Services.AddTransient<IDanhMucUserBus, DanhMucBus>();
+builder.Services.AddTransient<IOrderRepository, OrderUserRepository>();
+builder.Services.AddTransient<IOrderUserBus, OrderUserBus>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
