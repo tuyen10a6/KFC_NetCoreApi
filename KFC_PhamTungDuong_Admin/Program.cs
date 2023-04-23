@@ -15,6 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IDatabaseHelper, DatabaseHelper>();
 builder.Services.AddTransient<ISanPhamAdminRepository, SanPhamAdminRepository>();
 builder.Services.AddTransient<ISanPhamAdminBus,  ProductAdminBus>();
+builder.Services.AddTransient<IDanhMucAdmin, DanhMucAdminRepository>();
+builder.Services.AddTransient<IDanhMucAdminBus, DanhMucAdminBus>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
