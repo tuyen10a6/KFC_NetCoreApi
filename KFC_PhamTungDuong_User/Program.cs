@@ -23,6 +23,8 @@ builder.Services.AddTransient<ISlideRepository, SlideRepository>();
 builder.Services.AddTransient<ISlideUserBus, SlideBus>();
 builder.Services.AddTransient<IChiNhanhRepository, ChiNhanhUserRepository>();
 builder.Services.AddTransient<IChiNhanhUserBus, ChiNhanhBus>();
+builder.Services.AddCors(p => p.AddPolicy("MyCors", build => { build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader(); }));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,7 +35,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-builder.Services.AddCors(p => p.AddPolicy("MyCors", build => { build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader(); }));
 app.UseCors("MyCors");
 
 

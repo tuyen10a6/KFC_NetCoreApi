@@ -18,7 +18,7 @@ namespace MODEL
         public int MaDanhMuc { get; set; }
         public int LuotXem { get; set; }
         public string MoTa { get; set; }
-        public string MaNhaCungCap { get; set; }
+        public int MaNhaCungCap { get; set; }
         public int   TotalQuantitySold { get; set; }
 
     }
