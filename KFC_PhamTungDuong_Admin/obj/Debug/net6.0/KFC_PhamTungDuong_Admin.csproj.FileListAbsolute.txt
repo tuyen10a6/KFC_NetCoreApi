@@ -68,3 +68,4 @@ E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\KFC_PhamTungD
 E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\KFC_PhamTungDuong_Admin\bin\Debug\net6.0\BUS.pdb
 E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\KFC_PhamTungDuong_Admin\bin\Debug\net6.0\DAL.pdb
 E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\KFC_PhamTungDuong_Admin\bin\Debug\net6.0\MODEL.pdb
+E:\Kì 2 Năm 3\Web Api\Phạm Tùng Dương\KFC_PhamTungDuong_Api\KFC_PhamTungDuong_Admin\bin\Debug\net6.0\KFC_PhamTungDuong_Admin.staticwebassets.runtime.json

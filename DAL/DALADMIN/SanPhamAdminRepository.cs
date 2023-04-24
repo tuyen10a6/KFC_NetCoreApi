@@ -66,6 +66,13 @@ namespace DAL.DALADMIN
             var result = OK.ConvertTo<SanPhamModel>().ToList();
             return result;
         }
+        public SanPhamModel GetProductByID(int ProductID)
+        {
+            var ProcName = "GetSanPhamById";
+            var Ok = _databaseHelper.ExecuteSProcedureReturnDataTable(ProcName , "@ProductID", ProductID);
+            var result = Ok.ConvertTo<SanPhamModel>().FirstOrDefault();
+            return result;
+        }
 
         public List<SanPhamModel> SearchProduct(string ProductName)
         {

@@ -32,6 +32,11 @@ namespace BUS.BusAdmin
             return _productRepository.GetAllSanPham();
         }
 
+        public SanPhamModel GetProductByID(int ProductID)
+        {
+            return _productRepository.GetProductByID(ProductID);
+        }
+
         public List<SanPhamModel> SearchProduct(string ProductName)
         {
             return _productRepository.SearchProduct(ProductName);

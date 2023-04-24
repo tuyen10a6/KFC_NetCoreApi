@@ -127,12 +127,15 @@ CREATE TABLE PhieuThu (
 
 ------- Tạo hàm thủ tục lấy toàn bộ sản phẩm
 
-CREATE PROCEDURE GetAllSanPham
+ALTER PROCEDURE GetAllSanPham
 AS
 BEGIN
-  SELECT s.* , d.TenDanhMuc FROM SanPham as s
-  INNER JOIN DanhMuc as d 
+  SELECT s.* , d.TenDanhMuc , n.TenNhaCungCap FROM SanPham as s
+  LEFT JOIN DanhMuc as d 
    on s.MaDanhMuc = d.MaDanhMuc
+   LEFT JOIN NhaCungCap as n 
+   on n.MaNhaCungCap = s.MaNhaCungCap
+   
 END
 
 EXEC GetAllSanPham
@@ -166,7 +169,7 @@ END
 EXEC SearchSanPham viên
 
 
-CREATE PROCEDURE AddSanPham
+ALTER PROCEDURE AddSanPham
   @RequestBody NVARCHAR(MAX)
 AS
 BEGIN
@@ -180,13 +183,13 @@ BEGIN
           @NgayTao DATETIME
   
   -- Parse request body to get values of parameters
-  SELECT @TenSanPham = JSON_VALUE(@RequestBody, '$.TenSanPham'),
-         @GiaTien = JSON_VALUE(@RequestBody, '$.GiaTien'),
-         @Image = JSON_VALUE(@RequestBody, '$.Image'),
-         @MaDanhMuc = JSON_VALUE(@RequestBody, '$.MaDanhMuc'),
-         @LuotXem = JSON_VALUE(@RequestBody, '$.LuotXem'),
-         @MoTa = JSON_VALUE(@RequestBody, '$.MoTa'),
-         @MaNhaCungCap = JSON_VALUE(@RequestBody, '$.MaNhaCungCap'),
+  SELECT @TenSanPham = JSON_VALUE(@RequestBody, '$.tenSanPham'),
+         @GiaTien = JSON_VALUE(@RequestBody, '$.giaTien'),
+         @Image = JSON_VALUE(@RequestBody, '$.image'),
+         @MaDanhMuc = JSON_VALUE(@RequestBody, '$.maDanhMuc'),
+         @LuotXem = JSON_VALUE(@RequestBody, '$.luotXem'),
+         @MoTa = JSON_VALUE(@RequestBody, '$.moTa'),
+         @MaNhaCungCap = JSON_VALUE(@RequestBody, '$.maNhaCungCap'),
          @NgayTao = GETDATE()
          
   -- Insert new record into SanPham table
@@ -309,7 +312,7 @@ EXEC AddSanPham @RequestBody = N'{
 
 
 --- Update Product
-CREATE PROCEDURE UpdateSanPham
+ALTER PROCEDURE UpdateSanPham
   @RequestBody NVARCHAR(MAX)
 AS
 BEGIN
@@ -323,14 +326,14 @@ BEGIN
           @MaNhaCungCap INT
   
   -- Parse request body to get values of parameters
-  SELECT @MaSanPham = JSON_VALUE(@RequestBody, '$.MaSanPham'),
-         @TenSanPham = JSON_VALUE(@RequestBody, '$.TenSanPham'),
-         @GiaTien = JSON_VALUE(@RequestBody, '$.GiaTien'),
-         @Image = JSON_VALUE(@RequestBody, '$.Image'),
-         @MaDanhMuc = JSON_VALUE(@RequestBody, '$.MaDanhMuc'),
-         @LuotXem = JSON_VALUE(@RequestBody, '$.LuotXem'),
-         @MoTa = JSON_VALUE(@RequestBody, '$.MoTa'),
-         @MaNhaCungCap = JSON_VALUE(@RequestBody, '$.MaNhaCungCap')
+  SELECT @MaSanPham = JSON_VALUE(@RequestBody, '$.maSanPham'),
+         @TenSanPham = JSON_VALUE(@RequestBody, '$.tenSanPham'),
+         @GiaTien = JSON_VALUE(@RequestBody, '$.giaTien'),
+         @Image = JSON_VALUE(@RequestBody, '$.image'),
+         @MaDanhMuc = JSON_VALUE(@RequestBody, '$.maDanhMuc'),
+         @LuotXem = JSON_VALUE(@RequestBody, '$.luotXem'),
+         @MoTa = JSON_VALUE(@RequestBody, '$.moTa'),
+         @MaNhaCungCap = JSON_VALUE(@RequestBody, '$.maNhaCungCap')
          
   -- Update the record in SanPham table
   UPDATE SanPham
@@ -342,7 +345,7 @@ BEGIN
       MoTa = @MoTa,
       MaNhaCungCap = @MaNhaCungCap
   WHERE MaSanPham = @MaSanPham
-END
+EN
 
 
 EXEC UpdateSanPham @RequestBody = N'{
@@ -533,7 +536,7 @@ EXEC GetProductsByPriceRangeAndCategory @CategoryID = 1, @MinPrice = 10000, @Max
 --- Tạo hàm thủ tục  thêm danh mục
 
 
-CREATE PROCEDURE AddDanhMuc
+ALTER PROCEDURE AddDanhMuc
   @requestbody NVARCHAR(MAX)
 AS
 BEGIN
@@ -541,8 +544,8 @@ BEGIN
           @ImageDanhMuc NVARCHAR(MAX)
   
   -- Parse request body to get values of parameters
-  SELECT @TenDanhMuc = JSON_VALUE(@requestbody, '$.TenDanhMuc'),
-         @ImageDanhMuc = JSON_VALUE(@requestbody, '$.ImageDanhMuc')
+  SELECT @TenDanhMuc = JSON_VALUE(@requestbody, '$.tenDanhMuc'),
+         @ImageDanhMuc = JSON_VALUE(@requestbody, '$.imageDanhMuc')
   
   -- Insert new record into DanhMuc table
   INSERT INTO DanhMuc(TenDanhMuc, ImageDanhMuc)
@@ -555,7 +558,7 @@ SET @requestbody = '{"TenDanhMuc": "Danh mục sản phẩm mới", "ImageDanhMu
 EXEC AddDanhMuc @requestbody
 
 --- Hàm thủ tục sửa danh mục
-CREATE PROCEDURE UpdateDanhMuc
+ALTER PROCEDURE UpdateDanhMuc
   @requestbody NVARCHAR(MAX)
 AS
 BEGIN
@@ -564,9 +567,9 @@ BEGIN
           @ImageDanhMuc NVARCHAR(MAX)
   
   -- Parse request body to get values of parameters
-  SELECT @MaDanhMuc = JSON_VALUE(@requestbody, '$.MaDanhMuc'),
-         @TenDanhMuc = JSON_VALUE(@requestbody, '$.TenDanhMuc'),
-         @ImageDanhMuc = JSON_VALUE(@requestbody, '$.ImageDanhMuc')
+  SELECT @MaDanhMuc = JSON_VALUE(@requestbody, '$.maDanhMuc'),
+         @TenDanhMuc = JSON_VALUE(@requestbody, '$.tenDanhMuc'),
+         @ImageDanhMuc = JSON_VALUE(@requestbody, '$.imageDanhMuc')
   
   -- Update record in DanhMuc table
   UPDATE DanhMuc
@@ -620,3 +623,33 @@ EXEC GetLatestProduct
  EXEC GetAllDanhMuc
 
 
+ --- Tao ham thu tuc lay toan bo slide
+
+ CREATE PROC GetAllSlide
+ AS
+ BEGIN
+ SELECT * FROM Slide
+ END
+
+ EXEC GetAllSlide
+
+
+ --- Tao ham thu tuc lay toan bo chi nhanh
+ CREATE PROC GetAllChiNhanh
+ AS
+ BEGIN
+  SELECT * FROM ChiNhanh
+  END
+
+
+  EXEC GetAllChiNhanh
+
+
+  --- Hàm hiển thị nhad cung cấp
+  CREATE PROC GetAllNhaCungCap
+  AS
+  BEGIN 
+  SELECT * FROM NhaCungCap
+  END
+
+  EXEC GetAllNhaCungCap

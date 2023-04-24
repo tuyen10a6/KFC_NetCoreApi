@@ -46,6 +46,11 @@ namespace KFC_PhamTungDuong_Admin.Controllers
         {
             return Ok(_sanPhamAdminBus.GetAllSanPham());
         }
-
+        [HttpGet]
+        [Route("GetProductByID/{id}")]
+        public IActionResult GetProductById(int id)
+        {
+            return Ok(_sanPhamAdminBus.GetProductByID(id));
+        }
     }
 }

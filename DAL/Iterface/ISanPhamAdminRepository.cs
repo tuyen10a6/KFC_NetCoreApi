@@ -14,6 +14,7 @@ namespace DAL.Iterface
         bool DeleteProduct(int ProductID);
         bool UpdateProduct(SanPhamModel model);
         List<SanPhamModel> SearchProduct(string ProductName);
+        SanPhamModel GetProductByID(int ProductID);
 
     }
 }

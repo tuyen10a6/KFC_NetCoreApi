@@ -34,7 +34,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("MyCors");
 app.UseAuthorization();
-
+app.UseStaticFiles();
+app.UseDirectoryBrowser();
 app.MapControllers();
 
 app.Run();
