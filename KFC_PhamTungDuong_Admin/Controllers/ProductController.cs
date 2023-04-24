@@ -40,6 +40,12 @@ namespace KFC_PhamTungDuong_Admin.Controllers
         {
             return Ok(_sanPhamAdminBus.SearchProduct(ProductName));
         }
+        [HttpGet]
+        [Route("GetAllProduct")]
+        public IActionResult GetAllProduct()
+        {
+            return Ok(_sanPhamAdminBus.GetAllSanPham());
+        }
 
     }
 }

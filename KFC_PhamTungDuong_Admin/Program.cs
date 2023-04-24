@@ -1,3 +1,4 @@
+using BUS;
 using BUS.BusAdmin;
 using BUS.IBus;
 using DAL.DALADMIN;
@@ -17,6 +18,10 @@ builder.Services.AddTransient<ISanPhamAdminRepository, SanPhamAdminRepository>()
 builder.Services.AddTransient<ISanPhamAdminBus,  ProductAdminBus>();
 builder.Services.AddTransient<IDanhMucAdmin, DanhMucAdminRepository>();
 builder.Services.AddTransient<IDanhMucAdminBus, DanhMucAdminBus>();
+builder.Services.AddTransient<INhaCungCapAdminRepository, NhaCungCapAdminRepository>();
+builder.Services.AddTransient<INhaCungCapBus, NhaCungCapAdminBus>();
+builder.Services.AddCors(p => p.AddPolicy("MyCors", build => { build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader(); }));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,7 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("MyCors");
 app.UseAuthorization();
 
 app.MapControllers();
